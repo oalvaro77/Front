@@ -1,7 +1,29 @@
 const narratives = [
-  { id: 'nar-1', title: 'Reforma educativa', description: 'Promete modernizar la enseñanza sin subir impuestos.' },
-  { id: 'nar-2', title: 'Seguridad integral', description: 'Combina prevención ciudadana con inversión policial.' },
-  { id: 'nar-3', title: 'Economía inclusiva', description: 'Impulsa empleo y apoyo a mipymes.' },
+  {
+    id: 'orden',
+    name: 'Orden',
+    effect: { debate: 15 },
+  },
+  {
+    id: 'cambio',
+    name: 'Cambio',
+    effect: { influence: 20 },
+  },
+  {
+    id: 'anticorrupcion',
+    name: 'Anticorrupción',
+    effect: { credibility: 20 },
+  },
+  {
+    id: 'seguridad',
+    name: 'Seguridad',
+    effect: { debate: 10, credibility: 5 },
+  },
+  {
+    id: 'justicia-social',
+    name: 'Justicia Social',
+    effect: { influence: 15, credibility: 10 },
+  },
 ];
 
 export default narratives;
