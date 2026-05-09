@@ -1,9 +1,22 @@
 import React from 'react';
 
-const Card = ({ title, strength, description, name, party, type, image, stats }) => {
+const Card = ({
+  title,
+  strength,
+  description,
+  name,
+  party,
+  type,
+  image,
+  stats,
+  onClick,
+  className,
+}) => {
+  const classes = ['card', className].filter(Boolean).join(' ');
+
   if (name) {
     return (
-      <article className="card candidate-card">
+      <article className={classes} onClick={onClick}>
         <div className="card-portrait">
           {image ? <img src={image} alt={name} /> : <div className="card-placeholder">No Image</div>}
         </div>
@@ -21,10 +34,10 @@ const Card = ({ title, strength, description, name, party, type, image, stats })
   }
 
   return (
-    <article className="card">
+    <article className={classes} onClick={onClick}>
       <header>
         <h3>{title}</h3>
-        <span className="strength">Fuerza: {strength}</span>
+        {strength !== undefined && <span className="strength">Fuerza: {strength}</span>}
       </header>
       <p>{description}</p>
     </article>

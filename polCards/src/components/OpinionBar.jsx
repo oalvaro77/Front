@@ -1,16 +1,26 @@
 import React from 'react';
 
-const OpinionBar = ({ approval, intensity }) => {
-  const width = Math.min(100, Math.max(0, approval));
+const OpinionBar = ({ playerOpinion = 50, cpuOpinion = 50 }) => {
+  const safePlayer = Math.min(100, Math.max(0, playerOpinion));
+  const safeCpu = Math.min(100, Math.max(0, cpuOpinion));
+
   return (
     <section className="opinion-bar">
       <h2>Opinión pública</h2>
-      <div className="meter">
-        <div className="fill" style={{ width: `${width}%` }} />
+      <div className="opinion-row">
+        <div className="meter player-meter">
+          <span>Jugador {safePlayer}</span>
+          <div className="meter-track">
+            <div className="fill player-fill" style={{ width: `${safePlayer}%` }} />
+          </div>
+        </div>
+        <div className="meter cpu-meter">
+          <span>CPU {safeCpu}</span>
+          <div className="meter-track">
+            <div className="fill cpu-fill" style={{ width: `${safeCpu}%` }} />
+          </div>
+        </div>
       </div>
-      <p>
-        Nivel de aprobación: <strong>{approval}%</strong> - Intensidad: <strong>{Math.round(intensity * 100)}%</strong>
-      </p>
     </section>
   );
 };

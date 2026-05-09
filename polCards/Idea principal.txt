@@ -1,0 +1,458 @@
+El juego es un TCG político simplificado inspirado visual y mecánicamente en Yu-Gi-Oh, pero enfocado en “ganar opinión pública” usando candidatos políticos y narrativas ideológicas.
+
+# Objetivo del juego
+
+Cada jugador debe aumentar su “Opinión Pública” usando candidatos y narrativas que reaccionan a eventos políticos.
+
+Gana quien tenga más Opinión Pública al finalizar las rondas.
+
+---
+
+# Concepto principal
+
+El juego NO representa votos reales.
+
+El jugador:
+
+* arma un mazo político,
+* responde situaciones del país,
+* usa narrativas ideológicas,
+* combina candidatos y estrategias,
+* intenta convencer a la opinión pública.
+
+El juego registra las decisiones para detectar tendencias políticas y afinidades ideológicas.
+
+---
+
+# Estructura del mazo
+
+Cada jugador tiene:
+
+* 4 cartas de candidatos
+* 2 cartas de narrativa
+
+El CPU también posee un mazo.
+
+---
+
+# Tipos de cartas
+
+## 1. Candidate Cards
+
+Representan políticos reales.
+
+Tienen estadísticas.
+
+Ejemplo:
+
+```js
+{
+  id: 'miguel-uribe',
+  name: 'Miguel Uribe',
+  ideology: 'derecha',
+
+  stats: {
+    influencia: 80,
+    debate: 75,
+    credibilidad: 65,
+    corrupcion: 20
+  }
+}
+```
+
+---
+
+## Significado de stats
+
+### influencia
+
+Capacidad de ganar apoyo público.
+
+### debate
+
+Capacidad de imponerse en discusiones.
+
+### credibilidad
+
+Resistencia a ataques y eventos negativos.
+
+### corrupcion
+
+Stat negativa.
+
+Reduce efectividad en ciertos eventos.
+
+---
+
+# 2. Narrative Cards
+
+Representan discursos o enfoques políticos.
+
+Ejemplos:
+
+* Orden
+* Cambio
+* Anticorrupción
+* Seguridad
+* Justicia Social
+
+Ejemplo:
+
+```js
+{
+  id: 'orden',
+  name: 'Orden',
+
+  effect: {
+    debate: +15
+  }
+}
+```
+
+Las narrativas modifican estadísticas temporalmente.
+
+---
+
+# 3. Event Cards
+
+Cada ronda tiene un evento nacional.
+
+Los eventos cambian el contexto político.
+
+Ejemplos:
+
+* Crisis de seguridad
+* Escándalo de corrupción
+* Protestas
+* Desempleo
+* Crisis energética
+
+Ejemplo:
+
+```js
+{
+  id: 'security-crisis',
+  name: 'Crisis de seguridad',
+
+  modifiers: {
+    derecha: {
+      debate: +10
+    }
+  }
+}
+```
+
+---
+
+# Flujo de una partida
+
+# 1. Deck Selection Phase
+
+El jugador selecciona:
+
+* 4 candidatos
+* 2 narrativas
+
+El sistema guarda esta información para analytics.
+
+---
+
+# 2. Start Match
+
+Se inicializan:
+
+```js
+playerOpinion = 50
+cpuOpinion = 50
+turn = 1
+```
+
+Se selecciona un evento aleatorio.
+
+---
+
+# 3. Turn Loop
+
+Cada turno sigue este flujo:
+
+---
+
+## A. Reveal Event
+
+Se muestra el evento activo.
+
+Ejemplo:
+
+```txt
+⚠️ Crisis de seguridad
+Derecha +10 debate
+```
+
+---
+
+## B. Player Action
+
+El jugador selecciona:
+
+* 1 candidato
+* opcionalmente 1 narrativa
+
+Ejemplo:
+
+```txt
+Miguel Uribe + Orden
+```
+
+---
+
+## C. CPU Action
+
+La CPU selecciona automáticamente:
+
+* un candidato,
+* opcionalmente narrativa.
+
+La IA es simple.
+
+Debe:
+
+* aprovechar buffs,
+* elegir cartas disponibles,
+* responder al evento actual.
+
+---
+
+## D. Battle Resolution
+
+El battleEngine calcula los puntajes.
+
+---
+
+# Fórmula base
+
+```js
+score =
+  influencia * 0.4 +
+  debate * 0.3 +
+  credibilidad * 0.3 -
+  corrupcion * 0.2
+```
+
+---
+
+# Aplicación de modificadores
+
+Luego se aplican:
+
+* buffs del evento,
+* buffs de narrativa,
+* ventajas ideológicas.
+
+---
+
+# Sistema ideológico
+
+Existe ventaja tipo piedra-papel-tijera:
+
+```txt
+izquierda > derecha
+derecha > centro
+centro > izquierda
+```
+
+Multiplicadores:
+
+```js
+advantage = 1.2
+disadvantage = 0.85
+```
+
+---
+
+# Resultado del turno
+
+Si el jugador gana:
+
+```js
+playerOpinion += 10
+cpuOpinion -= 5
+```
+
+Si pierde:
+
+```js
+playerOpinion -= 5
+cpuOpinion += 10
+```
+
+Empate:
+
+```js
+sin cambios
+```
+
+---
+
+# 4. End Turn
+
+Las cartas usadas quedan bloqueadas hasta el final de la partida.
+
+Esto obliga a administrar recursos.
+
+---
+
+# 5. End Match
+
+La partida termina cuando:
+
+* se usan todos los candidatos,
+* o se alcanza límite de rondas.
+
+---
+
+# Resultado final
+
+```txt
+Jugador: 82 opinión pública
+CPU: 61 opinión pública
+```
+
+---
+
+# Sistema de analytics
+
+El sistema registra:
+
+* candidatos elegidos,
+* narrativas usadas,
+* eventos donde fueron usados,
+* decisiones estratégicas.
+
+---
+
+# Objetivo del analytics
+
+Detectar:
+
+* afinidad ideológica,
+* narrativas preferidas,
+* tolerancia a corrupción,
+* tendencias políticas.
+
+---
+
+# Ejemplo de perfil generado
+
+```js
+{
+  dominantIdeology: 'derecha',
+  favoriteNarrative: 'orden',
+  corruptionTolerance: 'media',
+  aggressionLevel: 'alto'
+}
+```
+
+---
+
+# Estructura visual del juego
+
+La UI debe parecer un duelo de cartas tipo Yu-Gi-Oh.
+
+Elementos principales:
+
+* mano del jugador,
+* mano CPU,
+* evento actual,
+* zona de batalla,
+* barra de opinión pública,
+* log de batalla.
+
+---
+
+# Componentes principales
+
+## Board
+
+Pantalla principal del duelo.
+
+Contiene todo.
+
+---
+
+## Card
+
+Renderiza cualquier carta.
+
+---
+
+## DeckSelector
+
+Pantalla de selección de mazo.
+
+---
+
+## OpinionBar
+
+Muestra puntos actuales.
+
+---
+
+## EventBanner
+
+Muestra evento activo.
+
+---
+
+## BattleLog
+
+Muestra resultados del turno.
+
+---
+
+# Arquitectura lógica
+
+## battleEngine.js
+
+Responsable de:
+
+* resolver turnos,
+* calcular puntajes,
+* aplicar buffs,
+* decidir ganador.
+
+---
+
+## cpuEngine.js
+
+Decisiones simples CPU.
+
+---
+
+## ideologyEngine.js
+
+Genera perfil ideológico final.
+
+---
+
+# Restricciones del proyecto
+
+El juego debe mantenerse SIMPLE.
+
+NO incluir:
+
+* multiplayer online,
+* animaciones complejas,
+* historia,
+* inventario,
+* rarezas,
+* crafting,
+* economía,
+* mapas,
+* campañas.
+
+La prioridad es:
+
+* gameplay rápido,
+* estética tipo TCG,
+* decisiones políticas,
+* analytics ideológicos.
