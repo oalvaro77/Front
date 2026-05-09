@@ -1,27 +1,64 @@
-const getCandidateScore = (card) => {
+const normalizeStats = (card) => {
   const influence = card.stats.propuestas;
   const debate = card.stats.experiencia;
   const credibility = Math.max(0, 100 - card.stats.escandalos);
   const corruption = card.stats.escandalos;
 
-  return influence * 0.4 + debate * 0.3 + credibility * 0.3 - corruption * 0.2;
+  return { influence, debate, credibility, corruption };
 };
 
-export const chooseCpuAction = (cpuHand = [], narrativeHand = [], event = null, usedCandidateIds = []) => {
-  const availableCandidates = cpuHand.filter((card) => !usedCandidateIds.includes(card.id));
-  const candidate = availableCandidates.reduce((best, card) => {
-    const score = getCandidateScore(card);
-    return !best || score > best.score ? { card, score } : best;
-  }, null)?.card;
+const applyModifiers = (base, modifiers) => {
+  if (!modifiers) {
+    return base;
+  }
 
-  if (!candidate) {
+  return Object.entries(modifiers).reduce((acc, [key, value]) => {
+    if (typeof acc[key] === 'number') {
+      return { ...acc, [key]: acc[key] + value };
+    }
+    return acc;
+  }, base);
+};
+
+const scoreFromStats = (stats) => {
+  return stats.influence * 0.4 + stats.debate * 0.3 + stats.credibility * 0.3 - stats.corruption * 0.2;
+};
+
+const estimateCandidateValue = (card, narrative = null, event = null) => {
+  const base = normalizeStats(card);
+  const withNarrative = applyModifiers(base, narrative?.effect);
+  const withEvent = applyModifiers(withNarrative, event?.modifiers?.[card.type]);
+  return scoreFromStats(withEvent);
+};
+
+export const chooseCpuAction = (
+  cpuHand = [],
+  narrativeHand = [],
+  event = null,
+  usedCandidateIds = [],
+  usedNarrativeIds = []
+) => {
+  const availableCandidates = cpuHand.filter((card) => !usedCandidateIds.includes(card.id));
+  const availableNarratives = narrativeHand.filter((narrative) => !usedNarrativeIds.includes(narrative.id));
+
+  const candidateDecision = availableCandidates.reduce((best, card) => {
+    const baseScore = estimateCandidateValue(card, null, event);
+    const bestNarrative = availableNarratives.reduce(
+      (selected, narrative) => {
+        const score = estimateCandidateValue(card, narrative, event);
+        return score > selected.score ? { narrative, score } : selected;
+      },
+      { narrative: null, score: baseScore }
+    );
+
+    return !best || bestNarrative.score > best.score
+      ? { card, narrative: bestNarrative.narrative, score: bestNarrative.score }
+      : best;
+  }, null);
+
+  if (!candidateDecision) {
     return { candidate: null, narrative: null };
   }
 
-  const narrative = narrativeHand.reduce((best, candidateNarrative) => {
-    const impact = Object.values(candidateNarrative.effect).reduce((sum, value) => sum + value, 0);
-    return impact > best.impact ? { narrative: candidateNarrative, impact } : best;
-  }, { narrative: null, impact: -Infinity }).narrative;
-
-  return { candidate, narrative };
+  return { candidate: candidateDecision.card, narrative: candidateDecision.narrative };
 };
