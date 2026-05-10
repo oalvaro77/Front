@@ -19,10 +19,10 @@ const getAdvantageMultiplier = (attackerType, defenderType) => {
 };
 
 const normalizeStats = (card) => {
-  const influence = card.stats.oratoria;
-  const debate = card.stats.liderazgo;
-  const credibility = Math.max(0, 100 - card.stats.controversias);
-  const corruption = card.stats.controversias;
+  const influence = card.stats.propuestas;
+  const debate = card.stats.experiencia;
+  const credibility = Math.max(0, 100 - card.stats.escandalos);
+  const corruption = card.stats.escandalos;
 
   return { influence, debate, credibility, corruption };
 };
