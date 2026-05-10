@@ -136,7 +136,7 @@ const App = () => {
   };
 
   const handlePlayTurn = () => {
-    if (phase !== 'battle' || !selectedCandidate) return;
+    if (screen !== 'battle' || !selectedCandidate) return;
 
     const cpuAction = chooseCpuAction(
       availableCpuHand,
@@ -190,24 +190,6 @@ const App = () => {
       setUsedCpuNarratives((prev) => [...prev, cpuNarrative.id]);
     }
 
-    setBattleLog((prev) => [
-      {
-        time: `Turno ${turnNumber}`,
-        text: `${selectedCandidate.name}${selectedNarrative ? ` + ${selectedNarrative.name}` : ''} vs ${cpuCard.name}${cpuNarrative ? ` + ${cpuNarrative.name}` : ''}: ${winnerText}`,
-      },
-      ...prev,
-    ]);
-
-    trackEvent('turnResolved', {
-      turn: turnNumber,
-      event: currentEvent?.id,
-      playerCandidate: selectedCandidate.id,
-      playerNarrative: selectedNarrative?.id,
-      cpuCandidate: cpuCard.id,
-      cpuNarrative: cpuNarrative?.id,
-      winner: result.winner,
-    });
-
     const nextTurn = turnNumber + 1;
     const matchOver = nextTurn > MAX_TURNS || availablePlayerHand.length <= 1 || availableCpuHand.length <= 1;
 
@@ -235,23 +217,12 @@ const App = () => {
       setTurnNumber(nextTurn);
       setScreen('end');
     } else {
+      setTurnNumber(nextTurn);
       setScreen('result');
-    }
-
-    setPlayerOpinion(nextPlayerOpinion);
-    setCpuOpinion(nextCpuOpinion);
-    setUsedPlayerCards((prev) => [...prev, selectedCandidate.id]);
-    setUsedCpuCards((prev) => [...prev, cpuCard.id]);
-    if (selectedNarrative) {
-      setUsedPlayerNarratives((prev) => [...prev, selectedNarrative.id]);
-    }
-    if (cpuNarrative) {
-      setUsedCpuNarratives((prev) => [...prev, cpuNarrative.id]);
     }
   };
 
   const handleNextTurn = () => {
-    setTurnNumber(turnNumber + 1);
     setSelectedCandidateId(null);
     setSelectedNarrativeId(null);
     setScreen('battle');
