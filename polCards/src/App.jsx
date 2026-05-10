@@ -231,7 +231,7 @@ const App = () => {
     return (
       <div className="screen">
         <header>
-          <h1>Policars 2</h1>
+          <h1>Policards 2</h1>
         </header>
         <main className="screen-content">
           <DeckSelector selectedDeck={selectedDeck} onSelectDeck={handleDeckSelect} />
