@@ -35,15 +35,6 @@ const Board = ({
       </header>
 
       <div className="board-grid">
-        <section className="hand-panel cpu-hand">
-          <h3>Mano CPU</h3>
-          <div className="card-row">
-            {cpuHand.map((card) => (
-              <Card key={card.id} {...card} className="card-back" />
-            ))}
-          </div>
-        </section>
-
         <section className="hand-panel player-hand">
           <h3>Tu mano</h3>
           <div className="card-row">
@@ -54,6 +45,15 @@ const Board = ({
                 className={card.id === selectedCandidateId ? 'selected' : ''}
                 onClick={() => onSelectCandidate(card.id)}
               />
+            ))}
+          </div>
+        </section>
+
+        <section className="hand-panel cpu-hand">
+          <h3>Mano CPU</h3>
+          <div className="card-row">
+            {cpuHand.map((card) => (
+              <Card key={card.id} {...card} className="card-back" />
             ))}
           </div>
         </section>

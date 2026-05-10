@@ -28,7 +28,7 @@ const buildMatch = ({ selectedCandidates, selectedNarratives }) => {
 
 const App = () => {
   const [selectedDeck, setSelectedDeck] = useState('izquierda');
-  const [phase, setPhase] = useState('selection');
+  const [screen, setScreen] = useState('deck');
   const [candidateSelection, setCandidateSelection] = useState([]);
   const [narrativeSelection, setNarrativeSelection] = useState([]);
   const [playerHand, setPlayerHand] = useState([]);
@@ -48,6 +48,7 @@ const App = () => {
   const [battleLog, setBattleLog] = useState([]);
   const [matchEnded, setMatchEnded] = useState(false);
   const [profile, setProfile] = useState(null);
+  const [lastTurnResult, setLastTurnResult] = useState(null);
 
   const availableCandidatesForSelection = useMemo(() => {
     return [...politicians].sort((a, b) => {
@@ -65,17 +66,16 @@ const App = () => {
   const availableCpuHand = cpuHand.filter((card) => !usedCpuCards.includes(card.id));
   const availablePlayerNarratives = playerNarratives.filter((narrative) => !usedPlayerNarratives.includes(narrative.id));
 
-  useEffect(() => {
-    setPhase('selection');
-    setCandidateSelection([]);
-    setNarrativeSelection([]);
-    setSelectedCandidateId(null);
-    setSelectedNarrativeId(null);
-    setMatchEnded(false);
-  }, [selectedDeck]);
+  // useEffect(() => {
+  //   setCandidateSelection([]);
+  //   setNarrativeSelection([]);
+  //   setSelectedCandidateId(null);
+  //   setSelectedNarrativeId(null);
+  //   setMatchEnded(false);
+  // }, [selectedDeck]);
 
   const toggleCandidateSelection = (id) => {
-    if (phase !== 'selection') return;
+    if (screen !== 'candidates') return;
     setCandidateSelection((prev) =>
       prev.includes(id)
         ? prev.filter((candidateId) => candidateId !== id)
@@ -86,7 +86,7 @@ const App = () => {
   };
 
   const toggleNarrativeSelection = (id) => {
-    if (phase !== 'selection') return;
+    if (screen !== 'candidates') return;
     setNarrativeSelection((prev) =>
       prev.includes(id)
         ? prev.filter((narrativeId) => narrativeId !== id)
@@ -94,6 +94,13 @@ const App = () => {
         ? [...prev, id]
         : prev
     );
+  };
+
+  const handleDeckSelect = (deckId) => {
+    setSelectedDeck(deckId);
+    setCandidateSelection([]);
+    setNarrativeSelection([]);
+    setScreen('candidates');
   };
 
   const handleStartMatch = () => {
@@ -125,7 +132,7 @@ const App = () => {
     ]);
     setMatchEnded(false);
     setProfile(null);
-    setPhase('battle');
+    setScreen('battle');
   };
 
   const handlePlayTurn = () => {
@@ -147,6 +154,7 @@ const App = () => {
         { time: `Turno ${turnNumber}`, text: 'La CPU no tiene más candidatos disponibles.' },
         ...prev,
       ]);
+      setScreen('end');
       return;
     }
 
@@ -203,6 +211,19 @@ const App = () => {
     const nextTurn = turnNumber + 1;
     const matchOver = nextTurn > MAX_TURNS || availablePlayerHand.length <= 1 || availableCpuHand.length <= 1;
 
+    setLastTurnResult({
+      playerCard: selectedCandidate,
+      cpuCard,
+      playerNarrative,
+      cpuNarrative,
+      result,
+      winnerText,
+      nextPlayerOpinion,
+      nextCpuOpinion,
+      turnNumber,
+      matchOver,
+    });
+
     if (matchOver) {
       setMatchEnded(true);
       const finalProfile = analyzeProfile({
@@ -212,16 +233,32 @@ const App = () => {
       });
       setProfile(finalProfile);
       setTurnNumber(nextTurn);
-      return;
+      setScreen('end');
+    } else {
+      setScreen('result');
     }
 
-    setTurnNumber(nextTurn);
+    setPlayerOpinion(nextPlayerOpinion);
+    setCpuOpinion(nextCpuOpinion);
+    setUsedPlayerCards((prev) => [...prev, selectedCandidate.id]);
+    setUsedCpuCards((prev) => [...prev, cpuCard.id]);
+    if (selectedNarrative) {
+      setUsedPlayerNarratives((prev) => [...prev, selectedNarrative.id]);
+    }
+    if (cpuNarrative) {
+      setUsedCpuNarratives((prev) => [...prev, cpuNarrative.id]);
+    }
+  };
+
+  const handleNextTurn = () => {
+    setTurnNumber(turnNumber + 1);
     setSelectedCandidateId(null);
     setSelectedNarrativeId(null);
+    setScreen('battle');
   };
 
   const toggleDeck = (deckId) => {
-    if (phase !== 'selection') return;
+    if (screen !== 'deck') return;
     setSelectedDeck(deckId);
   };
 
@@ -233,15 +270,27 @@ const App = () => {
       : 'El duelo político terminó en empate.'
     : null;
 
-  if (phase === 'selection') {
+  if (screen === 'deck') {
     return (
-      <div className="app-shell">
+      <div className="screen">
         <header>
           <h1>Policars 2</h1>
         </header>
+        <main className="screen-content">
+          <DeckSelector selectedDeck={selectedDeck} onSelectDeck={handleDeckSelect} />
+        </main>
+      </div>
+    );
+  }
 
-        <main>
-          <DeckSelector selectedDeck={selectedDeck} onSelectDeck={toggleDeck} />
+  if (screen === 'candidates') {
+    return (
+      <div className="screen">
+        <header>
+          <h1>Policars 2</h1>
+        </header>
+        <main className="screen-content">
+          <DeckSelector selectedDeck={selectedDeck} onSelectDeck={handleDeckSelect} />
           <section className="selection-panel">
             <h2>Selecciona 4 candidatos</h2>
             <p>Elige tu equipo político. Elige 4 candidatos y 2 narrativas.</p>
@@ -278,49 +327,115 @@ const App = () => {
     );
   }
 
-  return (
-    <div className="app-shell">
-      <header>
-        <h1>Policars 2</h1>
-      </header>
+  if (screen === 'battle') {
+    return (
+      <div className="screen">
+        <header>
+          <h1>Policars 2</h1>
+        </header>
+        <main className="battle-screen">
+          <EventBanner event={currentEvent} />
+          <OpinionBar playerOpinion={playerOpinion} cpuOpinion={cpuOpinion} />
+          <Board
+            playerHand={availablePlayerHand}
+            cpuHand={availableCpuHand}
+            playerNarratives={availablePlayerNarratives}
+            event={currentEvent}
+            selectedDeck={selectedDeck}
+            selectedCandidateId={selectedCandidateId}
+            selectedNarrativeId={selectedNarrativeId}
+            onSelectCandidate={setSelectedCandidateId}
+            onSelectNarrative={setSelectedNarrativeId}
+            onPlayTurn={handlePlayTurn}
+            canPlay={!matchEnded && !!selectedCandidate}
+            turnNumber={turnNumber}
+            maxTurns={MAX_TURNS}
+            matchEnded={matchEnded}
+          />
+        </main>
+      </div>
+    );
+  }
 
-      <main>
-        <DeckSelector selectedDeck={selectedDeck} onSelectDeck={toggleDeck} />
-        <EventBanner event={currentEvent} />
-        <OpinionBar playerOpinion={playerOpinion} cpuOpinion={cpuOpinion} />
-        <Board
-          playerHand={availablePlayerHand}
-          cpuHand={availableCpuHand}
-          playerNarratives={availablePlayerNarratives}
-          event={currentEvent}
-          selectedDeck={selectedDeck}
-          selectedCandidateId={selectedCandidateId}
-          selectedNarrativeId={selectedNarrativeId}
-          onSelectCandidate={setSelectedCandidateId}
-          onSelectNarrative={setSelectedNarrativeId}
-          onPlayTurn={handlePlayTurn}
-          canPlay={!matchEnded && !!selectedCandidate}
-          turnNumber={turnNumber}
-          maxTurns={MAX_TURNS}
-          matchEnded={matchEnded}
-        />
-        {resultMessage && (
+  if (screen === 'result') {
+    return (
+      <div className="screen">
+        <header>
+          <h1>Policars 2</h1>
+        </header>
+        <main className="screen-content">
+          <section className="turn-result">
+            <h2>Resultado del Turno {lastTurnResult?.turnNumber}</h2>
+            <div className="battle-summary">
+              <div className="card-comparison">
+                <div className="player-side">
+                  <h3>Tu jugada</h3>
+                  <Card {...lastTurnResult?.playerCard} />
+                  {lastTurnResult?.playerNarrative && (
+                    <Card
+                      title={lastTurnResult.playerNarrative.name}
+                      description={`Efecto: ${Object.entries(lastTurnResult.playerNarrative.effect)
+                        .map(([key, value]) => `${key} ${value > 0 ? '+' : ''}${value}`)
+                        .join(', ')}`}
+                    />
+                  )}
+                </div>
+                <div className="vs">VS</div>
+                <div className="cpu-side">
+                  <h3>Jugada CPU</h3>
+                  <Card {...lastTurnResult?.cpuCard} className="card-back" />
+                  {lastTurnResult?.cpuNarrative && (
+                    <Card
+                      title={lastTurnResult.cpuNarrative.name}
+                      description={`Efecto: ${Object.entries(lastTurnResult.cpuNarrative.effect)
+                        .map(([key, value]) => `${key} ${value > 0 ? '+' : ''}${value}`)
+                        .join(', ')}`}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="result-details">
+                <p className="winner-text">{lastTurnResult?.winnerText}</p>
+                <div className="opinion-change">
+                  <p>Opinión pública:</p>
+                  <p>Jugador: {lastTurnResult?.nextPlayerOpinion}%</p>
+                  <p>CPU: {lastTurnResult?.nextCpuOpinion}%</p>
+                </div>
+              </div>
+            </div>
+            <button type="button" className="continue-button" onClick={handleNextTurn}>
+              Continuar al siguiente turno
+            </button>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  if (screen === 'end') {
+    return (
+      <div className="screen">
+        <header>
+          <h1>Policars 2</h1>
+        </header>
+        <main className="screen-content">
           <section className="match-summary">
             <h2>Resultado final</h2>
             <p>{resultMessage}</p>
             <p>Jugador: {playerOpinion} / CPU: {cpuOpinion}</p>
-            <button type="button" onClick={() => setPhase('selection')}>
+            <button type="button" onClick={() => setScreen('deck')}>
               Reiniciar selección de mazo
             </button>
             {profile && (
               <pre>{JSON.stringify(profile, null, 2)}</pre>
             )}
           </section>
-        )}
-        <BattleLog entries={battleLog} />
-      </main>
-    </div>
-  );
+        </main>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default App;
