@@ -132,6 +132,7 @@ const App = () => {
     setMatchEnded(false);
     setProfile(null);
     setScreen('battle');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePlayTurn = () => {
@@ -154,6 +155,7 @@ const App = () => {
         ...prev,
       ]);
       setScreen('end');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -207,10 +209,12 @@ const App = () => {
       setProfile(finalProfile);
       setTurnNumber(nextTurn);
       setScreen('end');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       setTurnNumber(nextTurn);
       setSelectedCandidateId(null);
       setSelectedNarrativeId(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
