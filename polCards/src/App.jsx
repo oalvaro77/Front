@@ -5,6 +5,7 @@ import OpinionBar from './components/OpinionBar';
 import EventBanner from './components/EventBanner';
 import BattleLog from './components/BattleLog';
 import Card from './components/Card';
+import Ranking from './components/Ranking';
 import { politicians, shuffleDeck } from './data/candidates';
 import narratives from './data/narratives';
 import events from './data/events';
@@ -12,6 +13,7 @@ import { resolveBattle } from './game/battleEngine';
 import { chooseCpuAction } from './game/cpuEngine';
 import { analyzeProfile } from './game/ideologyEngine';
 import { trackEvent } from './services/analyticsService';
+import { recordMatch } from './services/statsService';
 
 const INITIAL_OPINION = 50;
 const MAX_TURNS = 4;
@@ -48,12 +50,14 @@ const App = () => {
   const [battleLog, setBattleLog] = useState([]);
   const [matchEnded, setMatchEnded] = useState(false);
   const [profile, setProfile] = useState(null);
+  const [showRanking, setShowRanking] = useState(false);
 
   const availableCandidatesForSelection = useMemo(() => {
+    // Solo agrupa por ideología seleccionada primero, sin sorting por stats
     return [...politicians].sort((a, b) => {
       if (a.type === selectedDeck && b.type !== selectedDeck) return -1;
       if (a.type !== selectedDeck && b.type === selectedDeck) return 1;
-      return b.stats.propuestas - a.stats.propuestas;
+      return 0; // Mantiene orden original cuando stats son iguales
     });
   }, [selectedDeck]);
 
@@ -150,6 +154,11 @@ const App = () => {
 
     if (!cpuCard) {
       setMatchEnded(true);
+
+      // Guardar selección de candidatos en localStorage y sincronizar con API
+      const candidateIds = playerHand.map((card) => card.id);
+      recordMatch(candidateIds);
+
       setBattleLog((prev) => [
         { time: `Turno ${turnNumber}`, text: 'La CPU no tiene más candidatos disponibles.' },
         ...prev,
@@ -201,6 +210,11 @@ const App = () => {
 
     if (matchOver) {
       setMatchEnded(true);
+
+      // Guardar selección de candidatos en localStorage y sincronizar con API
+      const candidateIds = playerHand.map((card) => card.id);
+      recordMatch(candidateIds);
+
       const finalProfile = analyzeProfile({
         playedCandidates: playerHand.filter((card) => usedPlayerCards.includes(card.id) || card.id === selectedCandidate.id),
         usedNarratives: playerNarratives.filter((narrative) => usedPlayerNarratives.includes(narrative.id) || narrative.id === selectedNarrative?.id),
@@ -239,7 +253,17 @@ const App = () => {
         </header>
         <main className="screen-content">
           <DeckSelector selectedDeck={selectedDeck} onSelectDeck={handleDeckSelect} />
+          <div style={{ textAlign: 'center', marginTop: '24px' }}>
+            <button
+              className="btn-secondary"
+              onClick={() => setShowRanking(true)}
+              style={{ fontSize: '1rem', padding: '12px 32px' }}
+            >
+              Ver Ranking de Candidatos
+            </button>
+          </div>
         </main>
+        {showRanking && <Ranking onClose={() => setShowRanking(false)} />}
       </div>
     );
   }
@@ -271,9 +295,7 @@ const App = () => {
                 <Card
                   key={narrative.id}
                   title={narrative.name}
-                  description={`Efecto: ${Object.entries(narrative.effect)
-                    .map(([key, value]) => `${key} ${value > 0 ? '+' : ''}${value}`)
-                    .join(', ')}`}
+                  description={narrative.description}
                   className={narrativeSelection.includes(narrative.id) ? 'selected' : ''}
                   onClick={() => toggleNarrativeSelection(narrative.id)}
                 />
@@ -329,14 +351,20 @@ const App = () => {
             <h2>Resultado final</h2>
             <p>{resultMessage}</p>
             <p>Jugador: {playerOpinion} / CPU: {cpuOpinion}</p>
-            <button type="button" onClick={() => setScreen('deck')}>
-              Reiniciar selección de mazo
-            </button>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '16px' }}>
+              <button type="button" onClick={() => setShowRanking(true)} className="btn-secondary">
+                Ver Ranking
+              </button>
+              <button type="button" onClick={() => setScreen('deck')} className="btn-primary">
+                Jugar de nuevo
+              </button>
+            </div>
             {profile && (
               <pre>{JSON.stringify(profile, null, 2)}</pre>
             )}
           </section>
         </main>
+        {showRanking && <Ranking onClose={() => setShowRanking(false)} />}
       </div>
     );
   }

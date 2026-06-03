@@ -9,6 +9,13 @@ const decks = [
 const DeckSelector = ({ selectedDeck, onSelectDeck }) => {
   return (
     <section className="deck-selector">
+      <div className="banner-container">
+        <img
+          src="/images/casa de nariño.png"
+          alt="Casa de Nariño"
+          className="banner-image"
+        />
+      </div>
       <h2>Selecciona un mazo político</h2>
       <div className="deck-buttons">
         {decks.map((deck) => (

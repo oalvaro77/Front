@@ -1,10 +1,10 @@
 const normalizeStats = (card) => {
-  const influence = card.stats.propuestas;
+  const influencia = card.stats.propuestas;
   const debate = card.stats.experiencia;
-  const credibility = Math.max(0, 100 - card.stats.escandalos);
-  const corruption = card.stats.escandalos;
+  const credibilidad = Math.max(0, 100 - card.stats.escandalos);
+  const corrupcion = card.stats.escandalos;
 
-  return { influence, debate, credibility, corruption };
+  return { influencia, debate, credibilidad, corrupcion };
 };
 
 const applyModifiers = (base, modifiers) => {
@@ -21,7 +21,7 @@ const applyModifiers = (base, modifiers) => {
 };
 
 const scoreFromStats = (stats) => {
-  return stats.influence * 0.4 + stats.debate * 0.3 + stats.credibility * 0.3 - stats.corruption * 0.2;
+  return stats.influencia * 0.4 + stats.debate * 0.3 + stats.credibilidad * 0.3 - stats.corrupcion * 0.2;
 };
 
 const estimateCandidateValue = (card, narrative = null, event = null) => {

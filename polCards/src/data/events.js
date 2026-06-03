@@ -4,9 +4,9 @@ const events = [
     name: 'Crisis de seguridad',
     description: 'El país exige orden y respuestas claras sobre seguridad.',
     modifiers: {
-      derecha: { debate: 10, credibility: 5 },
+      derecha: { debate: 10, credibilidad: 5 },
       centro: { debate: 5 },
-      izquierda: { debate: -5, credibility: -5 },
+      izquierda: { debate: -5, credibilidad: -5 },
     },
   },
   {
@@ -14,9 +14,9 @@ const events = [
     name: 'Escándalo de corrupción',
     description: 'La atención pública se centra en transparencia y ética.',
     modifiers: {
-      izquierda: { credibility: 10 },
-      centro: { credibility: 5 },
-      derecha: { credibility: -10 },
+      izquierda: { credibilidad: 10 },
+      centro: { credibilidad: 5 },
+      derecha: { credibilidad: -10 },
     },
   },
   {
@@ -24,9 +24,9 @@ const events = [
     name: 'Protestas por desempleo',
     description: 'La economía y el empleo dominan la agenda política.',
     modifiers: {
-      izquierda: { influence: 10 },
-      centro: { influence: 5 },
-      derecha: { influence: -5 },
+      izquierda: { influencia: 10 },
+      centro: { influencia: 5 },
+      derecha: { influencia: -5 },
     },
   },
   {
@@ -34,9 +34,9 @@ const events = [
     name: 'Crisis energética',
     description: 'La gestión de la energía marca la confianza ciudadana.',
     modifiers: {
-      derecha: { debate: 5, credibility: 5 },
-      centro: { credibility: 10 },
-      izquierda: { influence: -5 },
+      derecha: { debate: 5, credibilidad: 5 },
+      centro: { credibilidad: 10 },
+      izquierda: { influencia: -5 },
     },
   },
   {
@@ -44,9 +44,9 @@ const events = [
     name: 'Justicia social',
     description: 'La sociedad exige equidad y derechos para todos.',
     modifiers: {
-      izquierda: { influence: 10, credibility: 5 },
-      centro: { influence: 5 },
-      derecha: { influence: -10 },
+      izquierda: { influencia: 10, credibilidad: 5 },
+      centro: { influencia: 5 },
+      derecha: { influencia: -10 },
     },
   },
 ];

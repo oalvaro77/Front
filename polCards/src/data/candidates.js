@@ -1,3 +1,7 @@
+// Stats promedio calculados: propuestas: 75, experiencia: 74, escandalos: 19
+// Todos los candidatos tienen las mismas características para que la elección sea por preferencia
+const AVERAGE_STATS = { propuestas: 75, experiencia: 74, escandalos: 19 };
+
 export const politicians = [
   {
     id: 'ivan-cepeda',
@@ -5,7 +9,7 @@ export const politicians = [
     party: 'Pacto Histórico',
     type: 'izquierda',
     image: '/images/ivan_cepeda.png',
-    stats: { propuestas: 78, experiencia: 82, escandalos: 15 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'abelardo-espriella',
@@ -13,7 +17,7 @@ export const politicians = [
     party: 'Independiente (Derecha)',
     type: 'derecha',
     image: '/images/abelardo.png',
-    stats: { propuestas: 62, experiencia: 45, escandalos: 48 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'paloma-valencia',
@@ -21,7 +25,7 @@ export const politicians = [
     party: 'Centro Democrático',
     type: 'derecha',
     image: '/images/paloma_valencia.png',
-    stats: { propuestas: 75, experiencia: 80, escandalos: 22 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'claudia-lopez',
@@ -29,7 +33,7 @@ export const politicians = [
     party: 'Alianza Verde',
     type: 'centro',
     image: '/images/claudia_lopez.png',
-    stats: { propuestas: 82, experiencia: 88, escandalos: 20 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'sergio-fajardo',
@@ -37,7 +41,7 @@ export const politicians = [
     party: 'Dignidad y Compromiso',
     type: 'centro',
     image: '/images/sergio_fajardo.png',
-    stats: { propuestas: 85, experiencia: 92, escandalos: 12 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'luis-g-murillo',
@@ -45,7 +49,7 @@ export const politicians = [
     party: 'Colombia Renaciente',
     type: 'centro',
     image: '/images/luis_murillo.png',
-    stats: { propuestas: 80, experiencia: 90, escandalos: 8 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'miguel-uribe',
@@ -53,7 +57,7 @@ export const politicians = [
     party: 'Centro Democrático',
     type: 'derecha',
     image: '/images/miguel_uribe.png',
-    stats: { propuestas: 74, experiencia: 70, escandalos: 18 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'roy-barreras',
@@ -61,7 +65,7 @@ export const politicians = [
     party: 'La Fuerza de la Paz',
     type: 'centro',
     image: '/images/roy_barrera.png',
-    stats: { propuestas: 88, experiencia: 95, escandalos: 35 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'carlos-caicedo',
@@ -69,7 +73,7 @@ export const politicians = [
     party: 'Fuerza Ciudadana',
     type: 'izquierda',
     image: '/images/carlos_caicedo.png',
-    stats: { propuestas: 72, experiencia: 78, escandalos: 25 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'clara-lopez',
@@ -77,7 +81,7 @@ export const politicians = [
     party: 'Todos Somos Colombia',
     type: 'izquierda',
     image: '/images/clara_lopez.png',
-    stats: { propuestas: 84, experiencia: 94, escandalos: 14 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'gustavo-matamoros',
@@ -85,7 +89,7 @@ export const politicians = [
     party: 'Independiente (Militar r.)',
     type: 'derecha',
     image: '/images/gustavo_matamoros.png',
-    stats: { propuestas: 65, experiencia: 60, escandalos: 5 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'santiago-botero',
@@ -93,7 +97,7 @@ export const politicians = [
     party: 'Independiente',
     type: 'derecha',
     image: '/images/santiago_botero.png',
-    stats: { propuestas: 58, experiencia: 40, escandalos: 10 },
+    stats: AVERAGE_STATS,
   },
   {
     id: 'sondra-mccollins',
@@ -101,7 +105,7 @@ export const politicians = [
     party: 'Independiente',
     type: 'centro',
     image: '/images/sondra_macollins.png',
-    stats: { propuestas: 68, experiencia: 50, escandalos: 12 },
+    stats: AVERAGE_STATS,
   },
 ];
 
