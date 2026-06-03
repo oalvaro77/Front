@@ -10,6 +10,7 @@ const Card = ({
   image,
   stats,
   rating,
+  showStats = true,
   onClick,
   className,
 }) => {
@@ -23,14 +24,17 @@ const Card = ({
         </div>
         <header>
           <h3>{name}</h3>
-          <p className="card-meta">{party} · {type}</p>
+          {showStats && <p className="card-meta">{party} · {type}</p>}
+          {!showStats && <p className="card-meta">{party}</p>}
         </header>
-        <div className="stats">
-          <p>Propuestas: {stats.propuestas}</p>
-          <p>Experiencia: {stats.experiencia}</p>
-          <p>Escándalos: {stats.escandalos}</p>
-          {rating !== undefined && <p className="rating">Rating: {rating.toFixed(1)}</p>}
-        </div>
+        {showStats && (
+          <div className="stats">
+            <p>Propuestas: {stats.propuestas}</p>
+            <p>Experiencia: {stats.experiencia}</p>
+            <p>Escándalos: {stats.escandalos}</p>
+            {rating !== undefined && <p className="rating">Rating: {rating.toFixed(1)}</p>}
+          </div>
+        )}
       </article>
     );
   }

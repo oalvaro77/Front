@@ -4,7 +4,7 @@ import Card from './Card';
 const Board = ({
   playerHand = [],
   event,
-  selectedDeck,
+  filters = {},
   selectedCandidateId,
   selectedOptionId,
   onSelectCandidate,
@@ -20,7 +20,7 @@ const Board = ({
       <header className="board-header">
         <div>
           <h2>Decisiones políticas</h2>
-          <p>Mazo activo: <strong>{selectedDeck}</strong></p>
+          <p>Filtros activos: <strong>{Object.keys(filters).filter((type) => filters[type]).join(', ') || 'Ninguno'}</strong></p>
           <p>Turno {turnNumber} / {maxTurns}</p>
         </div>
         {event && (
@@ -41,6 +41,7 @@ const Board = ({
               <Card
                 key={card.id}
                 {...card}
+                showStats={false}
                 className={card.id === selectedCandidateId ? 'selected' : ''}
                 onClick={() => onSelectCandidate(card.id)}
               />

@@ -1,12 +1,12 @@
 import React from 'react';
 
 const decks = [
-  { id: 'izquierda', label: 'Mazo Izquierda' },
-  { id: 'centro', label: 'Mazo Centro' },
-  { id: 'derecha', label: 'Mazo Derecha' },
+  { id: 'izquierda', label: 'Izquierda' },
+  { id: 'centro', label: 'Centro' },
+  { id: 'derecha', label: 'Derecha' },
 ];
 
-const DeckSelector = ({ selectedDeck, onSelectDeck }) => {
+const DeckSelector = ({ filters = {}, onToggleFilter }) => {
   return (
     <section className="deck-selector">
       <div className="banner-container">
@@ -16,14 +16,15 @@ const DeckSelector = ({ selectedDeck, onSelectDeck }) => {
           className="banner-image"
         />
       </div>
-      <h2>Selecciona un mazo político</h2>
+      <h2>Filtra candidatos por corriente</h2>
+      <p>Selecciona o desactiva izquierda, centro o derecha para ajustar la lista.</p>
       <div className="deck-buttons">
         {decks.map((deck) => (
           <button
             key={deck.id}
             type="button"
-            className={deck.id === selectedDeck ? 'active' : ''}
-            onClick={() => onSelectDeck(deck.id)}
+            className={filters[deck.id] ? 'active' : ''}
+            onClick={() => onToggleFilter(deck.id)}
           >
             {deck.label}
           </button>
