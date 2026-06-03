@@ -49,36 +49,34 @@ const scoreFromStats = (stats) => {
   );
 };
 
-export const resolveBattle = (
-  playerCard,
-  cpuCard,
-  event = null,
-  playerNarrative = null,
-  cpuNarrative = null
-) => {
-  const playerBase = normalizeStats(playerCard);
-  const cpuBase = normalizeStats(cpuCard);
-
-  const playerWithNarrative = applyModifiers(playerBase, playerNarrative?.effect);
-  const cpuWithNarrative = applyModifiers(cpuBase, cpuNarrative?.effect);
-
-  const eventPlayerModifiers = event?.modifiers?.[playerCard.type];
-  const eventCpuModifiers = event?.modifiers?.[cpuCard.type];
-
-  const playerFinal = applyModifiers(playerWithNarrative, eventPlayerModifiers);
-  const cpuFinal = applyModifiers(cpuWithNarrative, eventCpuModifiers);
-
-  const playerScore =
-    scoreFromStats(playerFinal) * getAdvantageMultiplier(playerCard.type, cpuCard.type);
-  const cpuScore = scoreFromStats(cpuFinal) * getAdvantageMultiplier(cpuCard.type, playerCard.type);
-
-  if (playerScore > cpuScore) {
-    return { winner: 'player', playerScore, cpuScore, margin: playerScore - cpuScore };
+export const resolveDecision = (event = null, selectedOptionId) => {
+  if (!event || !selectedOptionId) {
+    return {
+      outcome: 'invalid',
+      scoreDelta: 0,
+      message: 'No se seleccionó una opción válida.',
+      choice: null,
+    };
   }
 
-  if (cpuScore > playerScore) {
-    return { winner: 'cpu', playerScore, cpuScore, margin: cpuScore - playerScore };
+  const choice = event.choices?.find((option) => option.id === selectedOptionId);
+  if (!choice) {
+    return {
+      outcome: 'invalid',
+      scoreDelta: 0,
+      message: 'La opción no existe para este evento.',
+      choice: null,
+    };
   }
 
-  return { winner: 'draw', playerScore, cpuScore, margin: 0 };
+  const scoreDelta = Math.max(-15, Math.min(15, Math.round(choice.score)));
+  const outcome = scoreDelta >= 8 ? 'success' : scoreDelta >= 0 ? 'mixed' : 'challenge';
+  const message = choice.feedback || `Elegiste: ${choice.label}.`;
+
+  return {
+    outcome,
+    scoreDelta,
+    message,
+    choice,
+  };
 };

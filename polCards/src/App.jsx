@@ -7,10 +7,8 @@ import BattleLog from './components/BattleLog';
 import Card from './components/Card';
 import Ranking from './components/Ranking';
 import { politicians, shuffleDeck } from './data/candidates';
-import narratives from './data/narratives';
 import events from './data/events';
-import { resolveBattle } from './game/battleEngine';
-import { chooseCpuAction } from './game/cpuEngine';
+import { resolveDecision } from './game/battleEngine';
 import { analyzeProfile } from './game/ideologyEngine';
 import { trackEvent } from './services/analyticsService';
 import { recordMatch } from './services/statsService';
@@ -25,37 +23,26 @@ import {
 const INITIAL_OPINION = 50;
 const MAX_TURNS = 4;
 
-const buildMatch = ({ selectedCandidates, selectedNarratives, candidatePool }) => {
+const buildMatch = ({ selectedCandidates }) => {
   const playerHand = selectedCandidates;
-  const cpuHand = shuffleDeck(candidatePool.filter((card) => !selectedCandidates.some((selected) => selected.id === card.id))).slice(0, MAX_TURNS);
-  const playerNarratives = selectedNarratives;
-  const cpuNarratives = shuffleDeck(narratives.filter((narrative) => !selectedNarratives.some((selected) => selected.id === narrative.id))).slice(0, 2);
   const eventDeck = shuffleDeck(events).slice(0, MAX_TURNS);
 
-  return { playerHand, cpuHand, playerNarratives, cpuNarratives, eventDeck };
+  return { playerHand, eventDeck };
 };
 
 const App = () => {
   const [selectedDeck, setSelectedDeck] = useState('izquierda');
   const [screen, setScreen] = useState('deck');
   const [candidateSelection, setCandidateSelection] = useState([]);
-  const [narrativeSelection, setNarrativeSelection] = useState([]);
   const [playerHand, setPlayerHand] = useState([]);
-  const [cpuHand, setCpuHand] = useState([]);
-  const [playerNarratives, setPlayerNarratives] = useState([]);
-  const [cpuNarratives, setCpuNarratives] = useState([]);
   const [eventDeck, setEventDeck] = useState([]);
   const [candidateRatings, setCandidateRatings] = useState({});
   const [ratingMessage, setRatingMessage] = useState('');
   const [turnNumber, setTurnNumber] = useState(1);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
-  const [selectedNarrativeId, setSelectedNarrativeId] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [usedPlayerCards, setUsedPlayerCards] = useState([]);
-  const [usedCpuCards, setUsedCpuCards] = useState([]);
-  const [usedPlayerNarratives, setUsedPlayerNarratives] = useState([]);
-  const [usedCpuNarratives, setUsedCpuNarratives] = useState([]);
-  const [playerOpinion, setPlayerOpinion] = useState(INITIAL_OPINION);
-  const [cpuOpinion, setCpuOpinion] = useState(INITIAL_OPINION);
+  const [approval, setApproval] = useState(INITIAL_OPINION);
   const [battleLog, setBattleLog] = useState([]);
   const [matchEnded, setMatchEnded] = useState(false);
   const [profile, setProfile] = useState(null);
@@ -100,12 +87,10 @@ const App = () => {
   }, [selectedDeck, candidatesWithRatings]);
 
   const selectedCandidate = playerHand.find((card) => card.id === selectedCandidateId);
-  const selectedNarrative = playerNarratives.find((card) => card.id === selectedNarrativeId);
   const currentEvent = useMemo(() => eventDeck[turnNumber - 1] || null, [eventDeck, turnNumber]);
+  const selectedOption = currentEvent?.choices?.find((choice) => choice.id === selectedOptionId) || null;
 
   const availablePlayerHand = playerHand.filter((card) => !usedPlayerCards.includes(card.id));
-  const availableCpuHand = cpuHand.filter((card) => !usedCpuCards.includes(card.id));
-  const availablePlayerNarratives = playerNarratives.filter((narrative) => !usedPlayerNarratives.includes(narrative.id));
 
   // useEffect(() => {
   //   setCandidateSelection([]);
@@ -126,51 +111,28 @@ const App = () => {
     );
   };
 
-  const toggleNarrativeSelection = (id) => {
-    if (screen !== 'candidates') return;
-    setNarrativeSelection((prev) =>
-      prev.includes(id)
-        ? prev.filter((narrativeId) => narrativeId !== id)
-        : prev.length < 2
-        ? [...prev, id]
-        : prev
-    );
-  };
 
   const handleDeckSelect = (deckId) => {
     setSelectedDeck(deckId);
     setCandidateSelection([]);
-    setNarrativeSelection([]);
     setScreen('candidates');
   };
 
   const handleStartMatch = () => {
-    if (candidateSelection.length !== 4 || narrativeSelection.length !== 2) return;
+    if (candidateSelection.length !== 4) return;
 
     const selectedCandidates = candidatesWithRatings.filter((candidate) => candidateSelection.includes(candidate.id));
-    const selectedNarrativesList = narratives.filter((narrative) => narrativeSelection.includes(narrative.id));
-    const { playerHand, cpuHand, playerNarratives, cpuNarratives, eventDeck } = buildMatch({
-      selectedCandidates,
-      selectedNarratives: selectedNarrativesList,
-      candidatePool: candidatesWithRatings,
-    });
+    const { playerHand, eventDeck } = buildMatch({ selectedCandidates });
 
     setPlayerHand(playerHand);
-    setCpuHand(cpuHand);
-    setPlayerNarratives(playerNarratives);
-    setCpuNarratives(cpuNarratives);
     setEventDeck(eventDeck);
     setTurnNumber(1);
     setSelectedCandidateId(null);
-    setSelectedNarrativeId(null);
+    setSelectedOptionId(null);
     setUsedPlayerCards([]);
-    setUsedCpuCards([]);
-    setUsedPlayerNarratives([]);
-    setUsedCpuNarratives([]);
-    setPlayerOpinion(INITIAL_OPINION);
-    setCpuOpinion(INITIAL_OPINION);
+    setApproval(INITIAL_OPINION);
     setBattleLog([
-      { time: 'Inicio', text: `Duelo iniciado. Evento: ${eventDeck[0]?.name || 'N/A'}` },
+      { time: 'Inicio', text: `Se abre la primera situación: ${eventDeck[0]?.name || 'N/A'}` },
     ]);
     setMatchEnded(false);
     setProfile(null);
@@ -196,85 +158,34 @@ const App = () => {
   };
 
   const handlePlayTurn = () => {
-    if (screen !== 'battle' || !selectedCandidate) return;
+    if (screen !== 'battle' || !selectedCandidate || !selectedOptionId) return;
 
-    const cpuAction = chooseCpuAction(
-      availableCpuHand,
-      cpuNarratives,
-      currentEvent,
-      usedCpuCards,
-      usedCpuNarratives
-    );
-    const cpuCard = cpuAction.candidate;
-    const cpuNarrative = cpuAction.narrative;
+    const result = resolveDecision(currentEvent, selectedOptionId);
+    const nextApproval = Math.min(100, Math.max(0, approval + result.scoreDelta));
 
-    if (!cpuCard) {
-      setMatchEnded(true);
-
-      // Guardar selección de candidatos en localStorage y sincronizar con API
-      const candidateIds = playerHand.map((card) => card.id);
-      recordMatch(candidateIds);
-
-      setBattleLog((prev) => [
-        { time: `Turno ${turnNumber}`, text: 'La CPU no tiene más candidatos disponibles.' },
-        ...prev,
-      ]);
-      setScreen('end');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
-    const result = resolveBattle(selectedCandidate, cpuCard, currentEvent, selectedNarrative, cpuNarrative);
-    const winnerText =
-      result.winner === 'player'
-        ? 'Jugador gana el turno'
-        : result.winner === 'cpu'
-        ? 'CPU gana el turno'
-        : 'Empate';
-
-    const nextPlayerOpinion =
-      result.winner === 'player'
-        ? Math.min(100, playerOpinion + 10)
-        : result.winner === 'cpu'
-        ? Math.max(0, playerOpinion - 5)
-        : playerOpinion;
-    const nextCpuOpinion =
-      result.winner === 'player'
-        ? Math.max(0, cpuOpinion - 5)
-        : result.winner === 'cpu'
-        ? Math.min(100, cpuOpinion + 10)
-        : cpuOpinion;
-
-    setPlayerOpinion(nextPlayerOpinion);
-    setCpuOpinion(nextCpuOpinion);
+    setApproval(nextApproval);
     setUsedPlayerCards((prev) => [...prev, selectedCandidate.id]);
-    setUsedCpuCards((prev) => [...prev, cpuCard.id]);
-    if (selectedNarrative) {
-      setUsedPlayerNarratives((prev) => [...prev, selectedNarrative.id]);
-    }
-    if (cpuNarrative) {
-      setUsedCpuNarratives((prev) => [...prev, cpuNarrative.id]);
-    }
 
     setBattleLog((prev) => [
-      { time: `Turno ${turnNumber}`, text: `${winnerText}. Opinión: Jugador ${nextPlayerOpinion}%, CPU ${nextCpuOpinion}%` },
+      {
+        time: `Turno ${turnNumber}`,
+        text: `${selectedCandidate.name} tomó la decisión: ${result.choice?.label || 'Sin opción valida'}. ${result.message} (${result.scoreDelta >= 0 ? '+' : ''}${result.scoreDelta}). Satisfacción: ${nextApproval}%`,
+      },
       ...prev,
     ]);
 
     const nextTurn = turnNumber + 1;
-    const matchOver = nextTurn > MAX_TURNS || availablePlayerHand.length <= 1 || availableCpuHand.length <= 1;
+    const matchOver = nextTurn > MAX_TURNS || availablePlayerHand.length <= 1;
 
     if (matchOver) {
       setMatchEnded(true);
-
-      // Guardar selección de candidatos en localStorage y sincronizar con API
       const candidateIds = playerHand.map((card) => card.id);
       recordMatch(candidateIds);
 
       const finalProfile = analyzeProfile({
         playedCandidates: playerHand.filter((card) => usedPlayerCards.includes(card.id) || card.id === selectedCandidate.id),
-        usedNarratives: playerNarratives.filter((narrative) => usedPlayerNarratives.includes(narrative.id) || narrative.id === selectedNarrative?.id),
-        history: [{ action: 'battle', result: result.winner }],
+        usedNarratives: [],
+        history: [{ action: 'decision', result: result.outcome }],
       });
       setProfile(finalProfile);
       setTurnNumber(nextTurn);
@@ -283,7 +194,7 @@ const App = () => {
     } else {
       setTurnNumber(nextTurn);
       setSelectedCandidateId(null);
-      setSelectedNarrativeId(null);
+      setSelectedOptionId(null);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -294,11 +205,11 @@ const App = () => {
   };
 
   const resultMessage = matchEnded
-    ? playerOpinion > cpuOpinion
-      ? 'Has ganado el duelo político.'
-      : playerOpinion < cpuOpinion
-      ? 'Has perdido el duelo político.'
-      : 'El duelo político terminó en empate.'
+    ? approval >= 60
+      ? 'Tus decisiones fueron acertadas y la opinión pública es positiva.'
+      : approval >= 40
+      ? 'La población quedó con sentimientos mixtos tras tus respuestas.'
+      : 'Las decisiones fueron débiles y la opinión pública cayó.'
     : null;
 
   if (screen === 'deck') {
@@ -334,7 +245,7 @@ const App = () => {
           <DeckSelector selectedDeck={selectedDeck} onSelectDeck={handleDeckSelect} />
           <section className="selection-panel">
             <h2>Selecciona 4 candidatos</h2>
-            <p>Elige tu equipo político. Elige 4 candidatos y 2 narrativas.</p>
+            <p>Elige tus favoritos. El resultado depende de tus decisiones, no del candidato.</p>
             <div className="candidate-grid">
               {availableCandidatesForSelection.map((candidate) => (
                 <Card
@@ -345,19 +256,7 @@ const App = () => {
                 />
               ))}
             </div>
-            <h2>Selecciona 2 narrativas</h2>
-            <div className="card-row narrative-selection">
-              {narratives.map((narrative) => (
-                <Card
-                  key={narrative.id}
-                  title={narrative.name}
-                  description={narrative.description}
-                  className={narrativeSelection.includes(narrative.id) ? 'selected' : ''}
-                  onClick={() => toggleNarrativeSelection(narrative.id)}
-                />
-              ))}
-            </div>
-            <button type="button" className="start-button" onClick={handleStartMatch} disabled={candidateSelection.length !== 4 || narrativeSelection.length !== 2}>
+            <button type="button" className="start-button" onClick={handleStartMatch} disabled={candidateSelection.length !== 4}>
               Comenzar partida
             </button>
           </section>
@@ -370,23 +269,21 @@ const App = () => {
     return (
       <div className="screen">
         <header>
-          <h1>Policars 2</h1>
+          <h1>Policards 2</h1>
         </header>
         <main className="battle-screen">
           <EventBanner event={currentEvent} />
-          <OpinionBar playerOpinion={playerOpinion} cpuOpinion={cpuOpinion} />
+          <OpinionBar approval={approval} />
           <Board
             playerHand={availablePlayerHand}
-            cpuHand={availableCpuHand}
-            playerNarratives={availablePlayerNarratives}
             event={currentEvent}
             selectedDeck={selectedDeck}
             selectedCandidateId={selectedCandidateId}
-            selectedNarrativeId={selectedNarrativeId}
+            selectedOptionId={selectedOptionId}
             onSelectCandidate={setSelectedCandidateId}
-            onSelectNarrative={setSelectedNarrativeId}
+            onSelectOption={setSelectedOptionId}
             onPlayTurn={handlePlayTurn}
-            canPlay={!matchEnded && !!selectedCandidate}
+            canPlay={!matchEnded && !!selectedCandidate && !!selectedOptionId}
             turnNumber={turnNumber}
             maxTurns={MAX_TURNS}
             matchEnded={matchEnded}
@@ -406,7 +303,7 @@ const App = () => {
           <section className="match-summary">
             <h2>Resultado final</h2>
             <p>{resultMessage}</p>
-            <p>Jugador: {playerOpinion} / CPU: {cpuOpinion}</p>
+            <p>Opinión pública: {approval}%</p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '16px' }}>
               <button type="button" onClick={() => setShowRanking(true)} className="btn-secondary">
                 Ver Ranking

@@ -3,14 +3,12 @@ import Card from './Card';
 
 const Board = ({
   playerHand = [],
-  cpuHand = [],
-  playerNarratives = [],
   event,
   selectedDeck,
   selectedCandidateId,
-  selectedNarrativeId,
+  selectedOptionId,
   onSelectCandidate,
-  onSelectNarrative,
+  onSelectOption,
   onPlayTurn,
   canPlay,
   turnNumber,
@@ -21,7 +19,7 @@ const Board = ({
     <section className="board">
       <header className="board-header">
         <div>
-          <h2>Duelo político</h2>
+          <h2>Decisiones políticas</h2>
           <p>Mazo activo: <strong>{selectedDeck}</strong></p>
           <p>Turno {turnNumber} / {maxTurns}</p>
         </div>
@@ -36,7 +34,8 @@ const Board = ({
 
       <div className="board-grid">
         <section className="hand-panel player-hand">
-          <h3>Tu mano</h3>
+          <h3>Tu equipo</h3>
+          <p>Elige el candidato que quieres que represente tu decisión. El resultado depende de la opción, no del personaje.</p>
           <div className="card-row">
             {playerHand.map((card) => (
               <Card
@@ -49,32 +48,22 @@ const Board = ({
           </div>
         </section>
 
-        <section className="hand-panel cpu-hand">
-          <h3>Mano CPU</h3>
+        <section className="options-panel">
+          <h3>Opciones de respuesta</h3>
+          <p>Selecciona la mejor acción para resolver la situación actual.</p>
           <div className="card-row">
-            {cpuHand.map((card) => (
-              <Card key={card.id} {...card} className="card-back" />
+            {event?.choices?.map((choice) => (
+              <Card
+                key={choice.id}
+                title={choice.label}
+                description={choice.description || choice.feedback}
+                className={choice.id === selectedOptionId ? 'selected' : ''}
+                onClick={() => onSelectOption(choice.id)}
+              />
             ))}
           </div>
         </section>
       </div>
-
-      <section className="narrative-panel">
-        <h3>Narrativas disponibles</h3>
-        <div className="card-row">
-          {playerNarratives.map((narrative) => (
-            <Card
-              key={narrative.id}
-              title={narrative.name}
-              description={`Efecto: ${Object.entries(narrative.effect)
-                .map(([key, value]) => `${key} ${value > 0 ? '+' : ''}${value}`)
-                .join(', ')}`}
-              className={narrative.id === selectedNarrativeId ? 'selected' : ''}
-              onClick={() => onSelectNarrative(narrative.id)}
-            />
-          ))}
-        </div>
-      </section>
 
       <footer className="board-footer">
         <button type="button" onClick={onPlayTurn} disabled={!canPlay || matchEnded}>

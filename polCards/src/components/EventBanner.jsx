@@ -14,15 +14,7 @@ const EventBanner = ({ event }) => {
       <h2>🔔 Evento político</h2>
       <strong>{event.name}</strong>
       <p>{event.description}</p>
-      <div className="event-modifiers">
-        {Object.entries(event.modifiers).map(([ideology, modifier]) => (
-          <div key={ideology}>
-            <strong>{ideology}:</strong> {Object.entries(modifier)
-              .map(([key, value]) => `${key} ${value > 0 ? '+' : ''}${value}`)
-              .join(', ')}
-          </div>
-        ))}
-      </div>
+      <p className="event-tip">Selecciona la mejor opción para esta crisis; el candidato elegido es solo tu portavoz.</p>
     </aside>
   );
 };
