@@ -14,13 +14,20 @@ import { chooseCpuAction } from './game/cpuEngine';
 import { analyzeProfile } from './game/ideologyEngine';
 import { trackEvent } from './services/analyticsService';
 import { recordMatch } from './services/statsService';
+import {
+  getLocalRatings,
+  saveLocalRatings,
+  adjustCandidateRating,
+  fetchCandidateRatings,
+  syncRatingAdjustment,
+} from './services/ratingsService';
 
 const INITIAL_OPINION = 50;
 const MAX_TURNS = 4;
 
-const buildMatch = ({ selectedCandidates, selectedNarratives }) => {
+const buildMatch = ({ selectedCandidates, selectedNarratives, candidatePool }) => {
   const playerHand = selectedCandidates;
-  const cpuHand = shuffleDeck(politicians.filter((card) => !selectedCandidates.some((selected) => selected.id === card.id))).slice(0, MAX_TURNS);
+  const cpuHand = shuffleDeck(candidatePool.filter((card) => !selectedCandidates.some((selected) => selected.id === card.id))).slice(0, MAX_TURNS);
   const playerNarratives = selectedNarratives;
   const cpuNarratives = shuffleDeck(narratives.filter((narrative) => !selectedNarratives.some((selected) => selected.id === narrative.id))).slice(0, 2);
   const eventDeck = shuffleDeck(events).slice(0, MAX_TURNS);
@@ -38,6 +45,8 @@ const App = () => {
   const [playerNarratives, setPlayerNarratives] = useState([]);
   const [cpuNarratives, setCpuNarratives] = useState([]);
   const [eventDeck, setEventDeck] = useState([]);
+  const [candidateRatings, setCandidateRatings] = useState({});
+  const [ratingMessage, setRatingMessage] = useState('');
   const [turnNumber, setTurnNumber] = useState(1);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [selectedNarrativeId, setSelectedNarrativeId] = useState(null);
@@ -52,14 +61,43 @@ const App = () => {
   const [profile, setProfile] = useState(null);
   const [showRanking, setShowRanking] = useState(false);
 
+  useEffect(() => {
+    const localRatings = getLocalRatings();
+    setCandidateRatings(localRatings);
+
+    if (import.meta.env.VITE_API_URL) {
+      fetchCandidateRatings()
+        .then((apiRatings) => {
+          if (apiRatings) {
+            const mergedRatings = { ...localRatings, ...apiRatings };
+            setCandidateRatings(mergedRatings);
+            saveLocalRatings(mergedRatings);
+          }
+        })
+        .catch(() => {
+          // Si la API no está disponible, seguimos con las configuraciones locales.
+        });
+    }
+  }, []);
+
+  const candidatesWithRatings = useMemo(
+    () =>
+      politicians.map((candidate) => ({
+        ...candidate,
+        rating: candidateRatings[candidate.id] ?? candidate.rating ?? 5.0,
+        stats: { ...candidate.stats },
+      })),
+    [candidateRatings]
+  );
+
   const availableCandidatesForSelection = useMemo(() => {
     // Solo agrupa por ideología seleccionada primero, sin sorting por stats
-    return [...politicians].sort((a, b) => {
+    return [...candidatesWithRatings].sort((a, b) => {
       if (a.type === selectedDeck && b.type !== selectedDeck) return -1;
       if (a.type !== selectedDeck && b.type === selectedDeck) return 1;
       return 0; // Mantiene orden original cuando stats son iguales
     });
-  }, [selectedDeck]);
+  }, [selectedDeck, candidatesWithRatings]);
 
   const selectedCandidate = playerHand.find((card) => card.id === selectedCandidateId);
   const selectedNarrative = playerNarratives.find((card) => card.id === selectedNarrativeId);
@@ -109,11 +147,12 @@ const App = () => {
   const handleStartMatch = () => {
     if (candidateSelection.length !== 4 || narrativeSelection.length !== 2) return;
 
-    const selectedCandidates = politicians.filter((candidate) => candidateSelection.includes(candidate.id));
+    const selectedCandidates = candidatesWithRatings.filter((candidate) => candidateSelection.includes(candidate.id));
     const selectedNarrativesList = narratives.filter((narrative) => narrativeSelection.includes(narrative.id));
     const { playerHand, cpuHand, playerNarratives, cpuNarratives, eventDeck } = buildMatch({
       selectedCandidates,
       selectedNarratives: selectedNarrativesList,
+      candidatePool: candidatesWithRatings,
     });
 
     setPlayerHand(playerHand);
@@ -137,6 +176,23 @@ const App = () => {
     setProfile(null);
     setScreen('battle');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleRatingChange = async (candidateId, delta) => {
+    const updatedRatings = adjustCandidateRating(candidateId, delta);
+    setCandidateRatings(updatedRatings);
+
+    const newRating = updatedRatings[candidateId];
+    setRatingMessage(`Rating de ${candidateId} actualizado a ${newRating.toFixed(1)}`);
+    window.setTimeout(() => setRatingMessage(''), 2500);
+
+    if (import.meta.env.VITE_API_URL) {
+      try {
+        await syncRatingAdjustment(candidateId, newRating);
+      } catch (error) {
+        console.warn('[App] Rating sync failed:', error.message || error);
+      }
+    }
   };
 
   const handlePlayTurn = () => {
@@ -358,6 +414,27 @@ const App = () => {
               <button type="button" onClick={() => setScreen('deck')} className="btn-primary">
                 Jugar de nuevo
               </button>
+            </div>
+            <div className="rating-adjustment" style={{ marginTop: '24px' }}>
+              <h3>Ajuste de rating de candidatos</h3>
+              <p>Después de la partida puedes aumentar o disminuir en 0.1 el rating de cada candidato jugado.</p>
+              <div className="rating-list" style={{ display: 'grid', gap: '12px', marginTop: '12px' }}>
+                {playerHand.map((candidate) => {
+                  const currentRating = candidateRatings[candidate.id] ?? candidate.rating ?? 5.0;
+                  return (
+                    <div key={candidate.id} className="rating-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ flex: 1 }}><strong>{candidate.name}</strong> ({currentRating.toFixed(1)})</span>
+                      <button type="button" onClick={() => handleRatingChange(candidate.id, -0.1)} className="btn-secondary">
+                        -0.1
+                      </button>
+                      <button type="button" onClick={() => handleRatingChange(candidate.id, 0.1)} className="btn-primary">
+                        +0.1
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+              {ratingMessage && <p style={{ marginTop: '12px', fontStyle: 'italic' }}>{ratingMessage}</p>}
             </div>
             {profile && (
               <pre>{JSON.stringify(profile, null, 2)}</pre>

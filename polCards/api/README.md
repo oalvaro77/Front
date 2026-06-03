@@ -63,6 +63,39 @@ Registra una selección de 4 candidatos de una partida.
 }
 ```
 
+### GET /api/stats/rating
+Obtiene los ratings persistidos para cada candidato.
+
+**Respuesta:**
+```json
+{
+  "ratings": {
+    "ivan-cepeda": 5.1,
+    "claudia-lopez": 4.9
+  }
+}
+```
+
+### POST /api/stats/rating
+Actualiza el rating de un candidato tras finalizar una partida.
+
+**Request Body:**
+```json
+{
+  "candidateId": "ivan-cepeda",
+  "rating": 5.1
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "candidateId": "ivan-cepeda",
+  "rating": 5.1
+}
+```
+
 ## Base de Datos: Vercel KV (Redis)
 
 ### Estructura de Datos

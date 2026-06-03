@@ -9,6 +9,7 @@ const Card = ({
   type,
   image,
   stats,
+  rating,
   onClick,
   className,
 }) => {
@@ -28,6 +29,7 @@ const Card = ({
           <p>Propuestas: {stats.propuestas}</p>
           <p>Experiencia: {stats.experiencia}</p>
           <p>Escándalos: {stats.escandalos}</p>
+          {rating !== undefined && <p className="rating">Rating: {rating.toFixed(1)}</p>}
         </div>
       </article>
     );
