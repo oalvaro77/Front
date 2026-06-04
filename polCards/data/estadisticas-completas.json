@@ -1,0 +1,415 @@
+{
+  "metadata": {
+    "fecha_generacion": "2026-06-04",
+    "total_usuarios": 100,
+    "total_candidatos": 13,
+    "total_ciudades": 20
+  },
+  "ganador": {
+    "posicion": 1,
+    "id": "ivan-cepeda-castro",
+    "nombre": "Iván Cepeda Castro",
+    "partido": "Pacto Histórico",
+    "vicepresidente": "Aída Quilcué Vivas",
+    "tendencia": "izquierda",
+    "votos": 18,
+    "porcentaje": 18.0
+  },
+  "ranking_candidatos": [
+    {
+      "posicion": 1,
+      "id": "ivan-cepeda-castro",
+      "nombre": "Iván Cepeda Castro",
+      "partido": "Pacto Histórico",
+      "tendencia": "izquierda",
+      "votos": 18,
+      "porcentaje": 18.0
+    },
+    {
+      "posicion": 2,
+      "id": "abelardo-de-la-espriella",
+      "nombre": "Abelardo de la Espriella",
+      "partido": "Defensores de la Patria",
+      "tendencia": "derecha",
+      "votos": 17,
+      "porcentaje": 17.0
+    },
+    {
+      "posicion": 3,
+      "id": "sergio-fajardo-valderrama",
+      "nombre": "Sergio Fajardo Valderrama",
+      "partido": "Fajardo Presidente",
+      "tendencia": "centro",
+      "votos": 14,
+      "porcentaje": 14.0
+    },
+    {
+      "posicion": 4,
+      "id": "claudia-lopez",
+      "nombre": "Claudia López",
+      "partido": "Una Nueva Historia con Claudia",
+      "tendencia": "centro",
+      "votos": 9,
+      "porcentaje": 9.0
+    },
+    {
+      "posicion": 5,
+      "id": "roy-leonardo-barreras-montealegre",
+      "nombre": "Roy Leonardo Barreras Montealegre",
+      "partido": "La Fuerza",
+      "tendencia": "centro",
+      "votos": 9,
+      "porcentaje": 9.0
+    },
+    {
+      "posicion": 6,
+      "id": "oscar-mauricio-lizcano-arango",
+      "nombre": "Óscar Mauricio Lizcano Arango",
+      "partido": "Colombia es + ASÍ",
+      "tendencia": "centro",
+      "votos": 7,
+      "porcentaje": 7.0
+    },
+    {
+      "posicion": 7,
+      "id": "paloma-valencia-laserna",
+      "nombre": "Paloma Valencia Laserna",
+      "partido": "Centro Democrático",
+      "tendencia": "derecha",
+      "votos": 7,
+      "porcentaje": 7.0
+    },
+    {
+      "posicion": 8,
+      "id": "gustavo-matamoros-covacho",
+      "nombre": "Gustavo Matamoros Covachó",
+      "partido": "Ecologista Colombiano",
+      "tendencia": "verde",
+      "votos": 6,
+      "porcentaje": 6.0
+    },
+    {
+      "posicion": 9,
+      "id": "carlos-eduardo-caicedo-omar",
+      "nombre": "Carlos Eduardo Caicedo Omar",
+      "partido": "Caicedo",
+      "tendencia": "izquierda",
+      "votos": 4,
+      "porcentaje": 4.0
+    },
+    {
+      "posicion": 10,
+      "id": "miguel-uribe-londono",
+      "nombre": "Miguel Uribe Londoño",
+      "partido": "Partido Demócrata Colombiano",
+      "tendencia": "derecha",
+      "votos": 3,
+      "porcentaje": 3.0
+    },
+    {
+      "posicion": 11,
+      "id": "luis-gilberto-murillo-urrutia",
+      "nombre": "Luis Gilberto Murillo Urrutia",
+      "partido": "Oportunidad es Colombia",
+      "tendencia": "centro",
+      "votos": 3,
+      "porcentaje": 3.0
+    },
+    {
+      "posicion": 12,
+      "id": "raul-santiago-botero-jaramillo",
+      "nombre": "Raúl Santiago Botero Jaramillo",
+      "partido": "Romper el Sistema",
+      "tendencia": "derecha",
+      "votos": 2,
+      "porcentaje": 2.0
+    },
+    {
+      "posicion": 13,
+      "id": "sondra-macollins-garvin-pinto",
+      "nombre": "Sondra Macollins Garvín Pinto",
+      "partido": "Sondra Presidente 2026",
+      "tendencia": "centro",
+      "votos": 1,
+      "porcentaje": 1.0
+    }
+  ],
+  "distribucion_por_tendencia": {
+    "centro": {
+      "votos": 49,
+      "porcentaje": 49.0,
+      "candidatos": 6
+    },
+    "derecha": {
+      "votos": 29,
+      "porcentaje": 29.0,
+      "candidatos": 4
+    },
+    "izquierda": {
+      "votos": 22,
+      "porcentaje": 22.0,
+      "candidatos": 2
+    },
+    "verde": {
+      "votos": 6,
+      "porcentaje": 6.0,
+      "candidatos": 1
+    }
+  },
+  "distribucion_por_genero": {
+    "masculino": {
+      "cantidad": 30,
+      "porcentaje": 30.0,
+      "candidato_favorito": "ivan-cepeda-castro",
+      "votos_favorito": 6
+    },
+    "otro": {
+      "cantidad": 26,
+      "porcentaje": 26.0,
+      "candidato_favorito": "abelardo-de-la-espriella",
+      "votos_favorito": 6
+    },
+    "femenino": {
+      "cantidad": 22,
+      "porcentaje": 22.0,
+      "candidato_favorito": "empate_doble",
+      "votos_favorito": 5
+    },
+    "prefiero-no-decir": {
+      "cantidad": 22,
+      "porcentaje": 22.0,
+      "candidato_favorito": "ivan-cepeda-castro",
+      "votos_favorito": 6
+    }
+  },
+  "estadisticas_edad": {
+    "promedio": 45.2,
+    "minima": 18,
+    "maxima": 74,
+    "rangos": {
+      "18-25": {
+        "cantidad": 6,
+        "porcentaje": 6.0
+      },
+      "26-35": {
+        "cantidad": 26,
+        "porcentaje": 26.0
+      },
+      "36-45": {
+        "cantidad": 18,
+        "porcentaje": 18.0
+      },
+      "46-55": {
+        "cantidad": 26,
+        "porcentaje": 26.0
+      },
+      "56-65": {
+        "cantidad": 14,
+        "porcentaje": 14.0
+      },
+      "66+": {
+        "cantidad": 10,
+        "porcentaje": 10.0
+      }
+    }
+  },
+  "top_10_ciudades": [
+    {
+      "ciudad": "Popayán",
+      "usuarios": 10,
+      "porcentaje": 10.0,
+      "candidato_favorito": "sergio-fajardo-valderrama",
+      "votos_favorito": 3
+    },
+    {
+      "ciudad": "Bogotá",
+      "usuarios": 9,
+      "porcentaje": 9.0,
+      "candidato_favorito": "empate_triple",
+      "votos_favorito": 2
+    },
+    {
+      "ciudad": "Medellín",
+      "usuarios": 8,
+      "porcentaje": 8.0,
+      "candidato_favorito": "paloma-valencia-laserna",
+      "votos_favorito": 3
+    },
+    {
+      "ciudad": "Villavicencio",
+      "usuarios": 6,
+      "porcentaje": 6.0,
+      "candidato_favorito": "ivan-cepeda-castro",
+      "votos_favorito": 2
+    },
+    {
+      "ciudad": "Armenia",
+      "usuarios": 6,
+      "porcentaje": 6.0,
+      "candidato_favorito": "empate_total",
+      "votos_favorito": 1
+    },
+    {
+      "ciudad": "Montería",
+      "usuarios": 6,
+      "porcentaje": 6.0
+    },
+    {
+      "ciudad": "Pereira",
+      "usuarios": 6,
+      "porcentaje": 6.0
+    },
+    {
+      "ciudad": "Santa Marta",
+      "usuarios": 6,
+      "porcentaje": 6.0
+    },
+    {
+      "ciudad": "Tunja",
+      "usuarios": 5,
+      "porcentaje": 5.0
+    },
+    {
+      "ciudad": "Cúcuta",
+      "usuarios": 5,
+      "porcentaje": 5.0
+    }
+  ],
+  "insights_clave": [
+    {
+      "titulo": "Liderazgo de Iván Cepeda",
+      "descripcion": "Con 18 votos (18%), Iván Cepeda Castro lidera las preferencias, aunque con una ventaja estrecha de solo 1 voto sobre Abelardo de la Espriella."
+    },
+    {
+      "titulo": "Competencia Reñida en Top 3",
+      "descripcion": "Solo 4 votos separan al primero del tercero (18, 17, 14), mostrando una distribución de preferencias muy equilibrada."
+    },
+    {
+      "titulo": "Polarización Moderada",
+      "descripcion": "El centro político mantiene 49% de preferencias, mientras la izquierda (22%) y derecha (29%) suman 51%."
+    },
+    {
+      "titulo": "Diversidad Demográfica",
+      "descripcion": "El 48% de participantes se identifican fuera del binario tradicional de género, y hay representación de 20 ciudades."
+    },
+    {
+      "titulo": "Electorado Maduro",
+      "descripcion": "Con edad promedio de 45.2 años, el electorado participante es adulto, experimentado y políticamente activo."
+    }
+  ],
+  "preferencias_por_genero": {
+    "femenino": {
+      "abelardo-de-la-espriella": 5,
+      "sergio-fajardo-valderrama": 5,
+      "roy-leonardo-barreras-montealegre": 3,
+      "sondra-macollins-garvin-pinto": 1,
+      "oscar-mauricio-lizcano-arango": 2,
+      "carlos-eduardo-caicedo-omar": 2,
+      "claudia-lopez": 2,
+      "ivan-cepeda-castro": 1,
+      "paloma-valencia-laserna": 1
+    },
+    "masculino": {
+      "ivan-cepeda-castro": 6,
+      "gustavo-matamoros-covacho": 3,
+      "claudia-lopez": 3,
+      "oscar-mauricio-lizcano-arango": 2,
+      "abelardo-de-la-espriella": 4,
+      "miguel-uribe-londono": 2,
+      "sergio-fajardo-valderrama": 2,
+      "paloma-valencia-laserna": 4,
+      "roy-leonardo-barreras-montealegre": 2,
+      "raul-santiago-botero-jaramillo": 1,
+      "carlos-eduardo-caicedo-omar": 1
+    },
+    "otro": {
+      "ivan-cepeda-castro": 5,
+      "miguel-uribe-londono": 1,
+      "claudia-lopez": 1,
+      "abelardo-de-la-espriella": 6,
+      "gustavo-matamoros-covacho": 2,
+      "carlos-eduardo-caicedo-omar": 1,
+      "oscar-mauricio-lizcano-arango": 1,
+      "luis-gilberto-murillo-urrutia": 3,
+      "sergio-fajardo-valderrama": 3,
+      "roy-leonardo-barreras-montealegre": 1,
+      "paloma-valencia-laserna": 2
+    },
+    "prefiero-no-decir": {
+      "ivan-cepeda-castro": 6,
+      "sergio-fajardo-valderrama": 4,
+      "abelardo-de-la-espriella": 2,
+      "roy-leonardo-barreras-montealegre": 3,
+      "gustavo-matamoros-covacho": 1,
+      "claudia-lopez": 3,
+      "oscar-mauricio-lizcano-arango": 2,
+      "raul-santiago-botero-jaramillo": 1
+    }
+  },
+  "preferencias_por_ciudad": {
+    "Popayán": {
+      "ivan-cepeda-castro": 2,
+      "roy-leonardo-barreras-montealegre": 1,
+      "oscar-mauricio-lizcano-arango": 2,
+      "paloma-valencia-laserna": 1,
+      "sergio-fajardo-valderrama": 3,
+      "abelardo-de-la-espriella": 1
+    },
+    "Bogotá": {
+      "ivan-cepeda-castro": 2,
+      "oscar-mauricio-lizcano-arango": 2,
+      "abelardo-de-la-espriella": 1,
+      "luis-gilberto-murillo-urrutia": 1,
+      "roy-leonardo-barreras-montealegre": 2,
+      "sergio-fajardo-valderrama": 1
+    },
+    "Medellín": {
+      "sergio-fajardo-valderrama": 2,
+      "abelardo-de-la-espriella": 1,
+      "paloma-valencia-laserna": 3,
+      "ivan-cepeda-castro": 1,
+      "roy-leonardo-barreras-montealegre": 1
+    },
+    "Villavicencio": {
+      "miguel-uribe-londono": 1,
+      "ivan-cepeda-castro": 2,
+      "raul-santiago-botero-jaramillo": 1,
+      "sergio-fajardo-valderrama": 1,
+      "claudia-lopez": 1
+    },
+    "Armenia": {
+      "ivan-cepeda-castro": 1,
+      "sergio-fajardo-valderrama": 1,
+      "miguel-uribe-londono": 1,
+      "gustavo-matamoros-covacho": 1,
+      "claudia-lopez": 1,
+      "paloma-valencia-laserna": 1
+    }
+  },
+  "recomendaciones_estrategicas": {
+    "ivan_cepeda_castro": [
+      "Consolidar liderazgo ampliando ventaja sobre competidores",
+      "Fortalecer presencia entre votantes femeninos (solo 1 voto actualmente)",
+      "Capitalizar apoyo masculino y expandir a otros segmentos",
+      "Reforzar mensaje de unidad nacional"
+    ],
+    "abelardo_de_la_espriella": [
+      "Cerrar brecha de 1 voto con el primer lugar",
+      "Mantener fortaleza en género 'otro' (23%)",
+      "Expandir presencia en grandes ciudades",
+      "Construir coaliciones con otros sectores"
+    ],
+    "sergio_fajardo_valderrama": [
+      "Capitalizar victoria en Popayán como modelo",
+      "Fortalecer presencia en otras ciudades principales",
+      "Aprovechar apoyo equilibrado entre géneros",
+      "Diferenciarse del centro masificado"
+    ],
+    "otros_candidatos": [
+      "Buscar diferenciación clara en plataformas",
+      "Construir coaliciones para evitar dispersión de votos",
+      "Enfocarse en nichos específicos donde tengan ventajas",
+      "Fortalecer mensajes en regiones con mayor penetración"
+    ]
+  }
+}
